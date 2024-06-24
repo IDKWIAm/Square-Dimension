@@ -6,6 +6,7 @@ public class Player : MonoBehaviour
     [Header("Movement")]
     [SerializeField] private float speed;
     [SerializeField] private float jumpForce;
+    [SerializeField] private float maxFallSpeed;
     [SerializeField] private int extraJumpsValue;
     
     [Header("Dash")]
@@ -36,7 +37,7 @@ public class Player : MonoBehaviour
     private Vector2 wallJumpingPower = new Vector2(8f, 16f);
     
     [Header("Other Components")]
-    [SerializeField] private Rigidbody2D rigidbody;
+    [SerializeField] private Rigidbody2D rb;
     [SerializeField] private Animator animator;
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
@@ -48,7 +49,7 @@ public class Player : MonoBehaviour
     void Start()
     {
         _extraJumps = extraJumpsValue;
-        rigidbody = GetComponent<Rigidbody2D>();
+        rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
     }
     private void Update()
@@ -81,16 +82,12 @@ public class Player : MonoBehaviour
         _horizontal = Input.GetAxisRaw("Horizontal");
         if (!isWallJumping)
         {
-            rigidbody.velocity = new Vector2(_horizontal * speed, rigidbody.velocity.y);
+            rb.velocity = new Vector2(_horizontal * speed, rb.velocity.y);
         }
         if (_horizontal == 0)
-        {
             animator.SetBool("isRunning", false);
-        }
         else
-        {
             animator.SetBool("isRunning", true);
-        }
     }
     private void Flip()
     {
@@ -104,31 +101,30 @@ public class Player : MonoBehaviour
     }
     private void JumpUpdate()
     {
+        if (rb.velocity.y < -maxFallSpeed)
+            rb.velocity = new Vector2(rb.velocity.x, -maxFallSpeed);
+        
         if (IsGrounded())
-        {
             _coyoteTimeCounter = coyoteTime;
-        }
+        
         else
-        {
             _coyoteTimeCounter -= Time.deltaTime;
-        }
+        
         if (Input.GetButtonDown("Jump"))
-        {
             _jumpBufferCounter = jumpBufferTime;
-        }
+        
         else
-        {
             _jumpBufferCounter -= Time.deltaTime;
-        }
+        
         if (_jumpBufferCounter > 0 && _coyoteTimeCounter > 0)
         {
-            rigidbody.velocity = new Vector2(rigidbody.velocity.x, jumpForce);
+            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
             _jumpBufferCounter = 0;
             _extraJumps = extraJumpsValue;
         }
         else if (Input.GetButtonDown("Jump") && _extraJumps > 0)
         {
-            rigidbody.velocity = new Vector2(rigidbody.velocity.x, jumpForce);
+            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
             _extraJumps--;
             _coyoteTimeCounter = 0;
         }
@@ -144,13 +140,13 @@ public class Player : MonoBehaviour
     {
         _canDash = false;
         _isDashing = true;
-        float originalGravity = rigidbody.gravityScale;
-        rigidbody.gravityScale = 0;
-        rigidbody.velocity = new Vector2(transform.localScale.x * dashingPower, 0);
+        float originalGravity = rb.gravityScale;
+        rb.gravityScale = 0;
+        rb.velocity = new Vector2(transform.localScale.x * dashingPower, 0);
         trailRenderer.emitting = true;
         yield return new WaitForSeconds(dashingTime);
         trailRenderer.emitting = false;
-        rigidbody.gravityScale = originalGravity;
+        rb.gravityScale = originalGravity;
         _isDashing = false;
         yield return new WaitForSeconds(dashingCooldown);
         _canDash = true;
@@ -160,12 +156,10 @@ public class Player : MonoBehaviour
         if (IsWalled() && !IsGrounded() && _horizontal != 0)
         {
             _isWallSliding = true;
-            rigidbody.velocity = new Vector2(rigidbody.velocity.x, Mathf.Clamp(rigidbody.velocity.y, -wallSlidingSpeed, float.MaxValue));
+            rb.velocity = new Vector2(rb.velocity.x, Mathf.Clamp(rb.velocity.y, -wallSlidingSpeed, float.MaxValue));
         }
         else
-        {
             _isWallSliding = false;
-        }
     }
     private void WallJump()
     {
@@ -183,9 +177,8 @@ public class Player : MonoBehaviour
         if (Input.GetButtonDown("Jump") && wallJumpingCounter > 0f)
         {
             isWallJumping = true;
-            rigidbody.velocity = new Vector2(wallJumpingDirection * wallJumpingPower.x, wallJumpingPower.y);
+            rb.velocity = new Vector2(wallJumpingDirection * wallJumpingPower.x, wallJumpingPower.y);
             wallJumpingCounter = 0f;
-
             if (transform.localScale.x != wallJumpingDirection)
             {
                 _isFacingRight = !_isFacingRight;
