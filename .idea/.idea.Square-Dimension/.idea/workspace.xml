@@ -10,10 +10,15 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/ParallaxLayer.cs" root0="FORCE_HIGHLIGHTING" />
+  </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/Assets/Scripts/Player.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/ParalaxEffect.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/ParallaxLayer.cs" />
       </list>
     </option>
   </component>
@@ -66,7 +71,8 @@
       <workItem from="1719062736971" duration="1368000" />
       <workItem from="1719064375085" duration="1412000" />
       <workItem from="1719185451015" duration="8300000" />
-      <workItem from="1719226057641" duration="13441000" />
+      <workItem from="1719226057641" duration="17771000" />
+      <workItem from="1719403299459" duration="1793000" />
     </task>
     <servers />
   </component>

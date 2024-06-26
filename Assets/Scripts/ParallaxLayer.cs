@@ -2,17 +2,19 @@ using UnityEngine;
 
 public class ParallaxLayer : MonoBehaviour
 {
-    public Vector3 movementScale = Vector3.one;
-
-    Transform _camera;
-
-    void Start()
+    [SerializeField] private Transform followingTarget;
+    [SerializeField, Range(0f, 1f)] private float paralaxStrenght;
+    private Vector3 targetPosition;
+    private void Start()
     {
-        _camera = Camera.main.transform;
+        if (!followingTarget)
+            followingTarget = Camera.main.transform;
+        targetPosition = followingTarget.position;
     }
-
-    void LateUpdate()
+    private void Update()
     {
-        transform.position = Vector3.Scale(_camera.position, movementScale);
+        var delta = followingTarget.position - targetPosition;
+        targetPosition = followingTarget.position;
+        transform.position += delta * paralaxStrenght;
     }
 }
