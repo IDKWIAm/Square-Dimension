@@ -1,47 +1,52 @@
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Android;
 
 public class Player : MonoBehaviour
 {
     [Header("Movement")]
-    [SerializeField] private float speed;
-    [SerializeField] private float jumpForce;
-    [SerializeField] private float maxFallSpeed;
-    [SerializeField] private int extraJumpsValue;
-    
+    [SerializeField] float speed;
+    [SerializeField] float jumpForce;
+    [SerializeField] float maxFallSpeed;
+    [SerializeField] int extraJumpsValue;
+    //[SerializeField] ParticleSystem runParticles;
+    [SerializeField] ParticleSystem jumpParticles;
+    [SerializeField] ParticleSystem landingParticles;
+
     [Header("Dash")]
-    [SerializeField] private float dashingPower;
-    [SerializeField] private float dashingTime;
-    [SerializeField] private float dashingCooldown;
+    [SerializeField] float dashingPower;
+    [SerializeField] float dashingTime;
+    [SerializeField] float dashingCooldown;
     private bool _canDash = true;
     private bool _isDashing;
     
     [Header("Cool Jump")]
-    [SerializeField] private float coyoteTime;
+    [SerializeField] float coyoteTime;
     private float _coyoteTimeCounter;
-    [SerializeField] private float jumpBufferTime;
+    [SerializeField] float jumpBufferTime;
     private float _jumpBufferCounter;
     
     [Header("Wall Slide")]
-    [SerializeField] private float wallSlidingSpeed;
-    [SerializeField] private Transform wallCheck;
-    [SerializeField] private LayerMask wallLayer;
+    [SerializeField] float wallSlidingSpeed;
+    [SerializeField] Transform wallCheck;
+    [SerializeField] LayerMask wallLayer;
     private bool _isWallSliding;
     
     [Header("Wall Jump")]
     private bool isWallJumping;
     private float wallJumpingDirection;
-    [SerializeField] private float wallJumpingTime;
+    [SerializeField] float wallJumpingTime;
     private float wallJumpingCounter;
-    [SerializeField] private float wallJumpingDuration;
+    [SerializeField] float wallJumpingDuration;
     private Vector2 wallJumpingPower = new Vector2(8f, 16f);
     
     [Header("Other Components")]
-    [SerializeField] private Rigidbody2D rb;
-    [SerializeField] private Animator animator;
-    [SerializeField] private Transform groundCheck;
-    [SerializeField] private LayerMask groundLayer;
-    [SerializeField] private TrailRenderer trailRenderer;
+    [SerializeField] Rigidbody2D rb;
+    [SerializeField] Animator animator;
+    [SerializeField] Transform groundCheck;
+    [SerializeField] LayerMask groundLayer;
+    [SerializeField] TrailRenderer trailRenderer;
     
     private bool _isFacingRight = true;
     private float _horizontal;
@@ -79,6 +84,9 @@ public class Player : MonoBehaviour
     }
     private void MoveUpdate()
     {
+        //ParticleSystem.EmissionModule emissionModule = RunParticles.emission;
+        //emissionModule.rateOverTimeMultiplier = 0;
+
         _horizontal = Input.GetAxisRaw("Horizontal");
         if (!isWallJumping)
         {
@@ -87,7 +95,13 @@ public class Player : MonoBehaviour
         if (_horizontal == 0)
             animator.SetBool("isRunning", false);
         else
+        {
             animator.SetBool("isRunning", true);
+            //if (IsGrounded())
+            //{
+            //    emissionModule.rateOverTimeMultiplier = 1;
+            //}
+        }
     }
     private void Flip()
     {
@@ -101,14 +115,21 @@ public class Player : MonoBehaviour
     }
     private void JumpUpdate()
     {
+        if (jumpParticles.isStopped) jumpParticles.gameObject.SetActive(false);
+
         if (rb.velocity.y < -maxFallSpeed)
             rb.velocity = new Vector2(rb.velocity.x, -maxFallSpeed);
-        
+
         if (IsGrounded())
+        {
             _coyoteTimeCounter = coyoteTime;
-        
+            landingParticles.gameObject.SetActive(true);
+        }
         else
+        {
             _coyoteTimeCounter -= Time.deltaTime;
+            landingParticles.gameObject.SetActive(false);
+        }
         
         if (Input.GetButtonDown("Jump"))
             _jumpBufferCounter = jumpBufferTime;
@@ -127,6 +148,7 @@ public class Player : MonoBehaviour
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
             _extraJumps--;
             _coyoteTimeCounter = 0;
+            jumpParticles.gameObject.SetActive(true);
         }
     }
     private void DashUpdate()
