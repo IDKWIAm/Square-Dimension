@@ -16,9 +16,10 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/Assets/Scripts/Player.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/ParalaxEffect.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/ParallaxLayer.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/ParticleController.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/Player.cs" />
       </list>
     </option>
   </component>
@@ -41,6 +42,14 @@
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="RunManager" selected="Attach to Unity Editor.Attach to Unity Editor">
+    <configuration name="Standalone Player" type="RunUnityExe" factoryName="Unity Executable">
+      <option name="EXE_PATH" value="$PROJECT_DIR$/Build\Square Dimension.exe" />
+      <option name="PROGRAM_PARAMETERS" value="" />
+      <option name="WORKING_DIRECTORY" value="G:\Users\asus\Unity\Projekts\Square-Dimension\Build" />
+      <option name="PASS_PARENT_ENVS" value="1" />
+      <option name="USE_EXTERNAL_CONSOLE" value="0" />
+      <method v="2" />
+    </configuration>
     <configuration name="Attach to Unity Editor &amp; Play" type="UNITY_DEBUG_RUN_CONFIGURATION" factoryName="UNITY_ATTACH_AND_PLAY" show_console_on_std_err="false" show_console_on_std_out="false" port="50000" address="localhost">
       <option name="allowRunningInParallel" value="false" />
       <option name="listenPortForConnections" value="false" />
@@ -72,7 +81,7 @@
       <workItem from="1719064375085" duration="1412000" />
       <workItem from="1719185451015" duration="8300000" />
       <workItem from="1719226057641" duration="17771000" />
-      <workItem from="1719403299459" duration="3745000" />
+      <workItem from="1719403299459" duration="7773000" />
     </task>
     <servers />
   </component>

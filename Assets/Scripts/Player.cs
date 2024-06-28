@@ -1,7 +1,5 @@
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Android;
 
 public class Player : MonoBehaviour
 {
@@ -10,7 +8,7 @@ public class Player : MonoBehaviour
     [SerializeField] float jumpForce;
     [SerializeField] float maxFallSpeed;
     [SerializeField] int extraJumpsValue;
-    //[SerializeField] ParticleSystem runParticles;
+    [SerializeField] ParticleSystem runParticles;
     [SerializeField] ParticleSystem jumpParticles;
     [SerializeField] ParticleSystem landingParticles;
 
@@ -84,24 +82,18 @@ public class Player : MonoBehaviour
     }
     private void MoveUpdate()
     {
-        //ParticleSystem.EmissionModule emissionModule = RunParticles.emission;
-        //emissionModule.rateOverTimeMultiplier = 0;
-
         _horizontal = Input.GetAxisRaw("Horizontal");
         if (!isWallJumping)
-        {
             rb.velocity = new Vector2(_horizontal * speed, rb.velocity.y);
-        }
+        
         if (_horizontal == 0)
             animator.SetBool("isRunning", false);
+        
         else
-        {
             animator.SetBool("isRunning", true);
-            //if (IsGrounded())
-            //{
-            //    emissionModule.rateOverTimeMultiplier = 1;
-            //}
-        }
+        
+        if (IsGrounded() && rb.velocity.x != 0)
+            runParticles.Play();
     }
     private void Flip()
     {
