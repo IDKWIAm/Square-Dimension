@@ -49,6 +49,7 @@ public class Player : MonoBehaviour
     private bool _isFacingRight = true;
     private float _horizontal;
     private float _extraJumps;
+    private bool _inAirLastFrame;
     void Start()
     {
         _extraJumps = extraJumpsValue;
@@ -63,6 +64,7 @@ public class Player : MonoBehaviour
             Flip();
         }
         JumpUpdate();
+        FallUpdate();
         DashUpdate();
         WallSlide();
         WallJump();
@@ -107,21 +109,17 @@ public class Player : MonoBehaviour
     }
     private void JumpUpdate()
     {
-        if (jumpParticles.isStopped) jumpParticles.gameObject.SetActive(false);
-
         if (rb.velocity.y < -maxFallSpeed)
             rb.velocity = new Vector2(rb.velocity.x, -maxFallSpeed);
 
         if (IsGrounded())
         {
             _coyoteTimeCounter = coyoteTime;
-            landingParticles.gameObject.SetActive(true);
+            if (_inAirLastFrame)
+                landingParticles.Play();
         }
         else
-        {
             _coyoteTimeCounter -= Time.deltaTime;
-            landingParticles.gameObject.SetActive(false);
-        }
         
         if (Input.GetButtonDown("Jump"))
             _jumpBufferCounter = jumpBufferTime;
@@ -142,7 +140,17 @@ public class Player : MonoBehaviour
             _coyoteTimeCounter = 0;
             jumpParticles.gameObject.SetActive(true);
         }
+
+        if (IsGrounded()) _inAirLastFrame = false;
+        else _inAirLastFrame = true;
     }
+
+    private void FallUpdate()
+    {
+        if (Input.GetKeyDown(KeyCode.S)) gameObject.layer = 8;
+        if (Input.GetKeyUp(KeyCode.S)) gameObject.layer = 0;
+    }
+
     private void DashUpdate()
     {
         if (Input.GetKeyDown(KeyCode.LeftShift) && _canDash)
