@@ -4,29 +4,30 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     [Header("Movement")]
-    [SerializeField] float speed;
-    [SerializeField] float jumpForce;
-    [SerializeField] float maxFallSpeed;
-    [SerializeField] int extraJumpsValue;
+    [SerializeField] float speed = 7f;
+    [SerializeField] float jumpForce = 15f;
+    [SerializeField] float maxFallSpeed = 15f;
+    [SerializeField] float fastFallingScale = 12f;
+    [SerializeField] int extraJumpsValue = 1;
     [SerializeField] ParticleSystem runParticles;
     [SerializeField] ParticleSystem jumpParticles;
     [SerializeField] ParticleSystem landingParticles;
 
     [Header("Dash")]
-    [SerializeField] float dashingPower;
-    [SerializeField] float dashingTime;
-    [SerializeField] float dashingCooldown;
+    [SerializeField] float dashingPower = 24f;
+    [SerializeField] float dashingTime = 0.2f;
+    [SerializeField] float dashingCooldown = 1f;
     private bool _canDash = true;
     private bool _isDashing;
     
     [Header("Cool Jump")]
-    [SerializeField] float coyoteTime;
+    [SerializeField] float coyoteTime = 0.08f;
     private float _coyoteTimeCounter;
-    [SerializeField] float jumpBufferTime;
+    [SerializeField] float jumpBufferTime = 0.1f;
     private float _jumpBufferCounter;
     
     [Header("Wall Slide")]
-    [SerializeField] float wallSlidingSpeed;
+    [SerializeField] float wallSlidingSpeed = 0.2f;
     [SerializeField] Transform wallCheck;
     [SerializeField] LayerMask wallLayer;
     private bool _isWallSliding;
@@ -34,9 +35,9 @@ public class Player : MonoBehaviour
     [Header("Wall Jump")]
     private bool isWallJumping;
     private float wallJumpingDirection;
-    [SerializeField] float wallJumpingTime;
+    [SerializeField] float wallJumpingTime = 0.2f;
     private float wallJumpingCounter;
-    [SerializeField] float wallJumpingDuration;
+    [SerializeField] float wallJumpingDuration = 0.4f;
     private Vector2 wallJumpingPower = new Vector2(8f, 16f);
     
     [Header("Other Components")]
@@ -50,11 +51,14 @@ public class Player : MonoBehaviour
     private float _horizontal;
     private float _extraJumps;
     private bool _inAirLastFrame;
+    private float _defaultGravityScale;
+
     void Start()
     {
         _extraJumps = extraJumpsValue;
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+        _defaultGravityScale = rb.gravityScale;
     }
     private void Update()
     {
@@ -147,8 +151,16 @@ public class Player : MonoBehaviour
 
     private void FallUpdate()
     {
-        if (Input.GetKeyDown(KeyCode.S)) gameObject.layer = 8;
-        if (Input.GetKeyUp(KeyCode.S)) gameObject.layer = 0;
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            gameObject.layer = 8;
+            rb.gravityScale = fastFallingScale;
+        }
+        if (Input.GetKeyUp(KeyCode.S))
+        {
+            gameObject.layer = 0;
+            rb.gravityScale = _defaultGravityScale;
+        }
     }
 
     private void DashUpdate()
